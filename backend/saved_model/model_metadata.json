@@ -1,0 +1,22 @@
+{
+    "model_name": "Random Forest",
+    "feature_names": [
+        "N",
+        "P",
+        "K"
+    ],
+    "classes": [
+        "apple",
+        "banana",
+        "coffee",
+        "cotton",
+        "maize",
+        "potato",
+        "rice",
+        "sugarcane",
+        "tomato",
+        "wheat"
+    ],
+    "trained_date": "2026-03-10T11:59:32.737216",
+    "accuracy": 0.83
+}

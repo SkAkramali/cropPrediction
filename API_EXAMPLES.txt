@@ -1,0 +1,235 @@
+# API Testing Examples
+# =====================
+# Use these examples to test your API endpoints using curl, Postman, or httpie
+
+# ============================================================================
+# 1. Health Check
+# ============================================================================
+
+# Check if API is running and model is loaded
+curl http://localhost:8000/health
+
+# Expected Response:
+# {
+#   "status": "healthy",
+#   "model_loaded": true,
+#   "database_connected": true,
+#   "timestamp": "2026-03-10T12:00:00"
+# }
+
+
+# ============================================================================
+# 2. Get Model Information
+# ============================================================================
+
+curl http://localhost:8000/model-info
+
+# Expected Response:
+# {
+#   "model_name": "Random Forest",
+#   "features": ["N", "P", "K"],
+#   "classes": ["rice", "wheat", "maize", ...],
+#   "accuracy": 0.95,
+#   "trained_date": "2026-03-10T12:00:00"
+# }
+
+
+# ============================================================================
+# 3. Make a Prediction (Rice)
+# ============================================================================
+
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nitrogen": 90,
+    "phosphorus": 42,
+    "potassium": 43
+  }'
+
+# Expected Response:
+# {
+#   "success": true,
+#   "input": {
+#     "nitrogen": 90,
+#     "phosphorus": 42,
+#     "potassium": 43
+#   },
+#   "prediction": {
+#     "recommended_crop": "rice",
+#     "confidence_score": 0.92
+#   },
+#   "timestamp": "2026-03-10T12:00:00"
+# }
+
+
+# ============================================================================
+# 4. Make a Prediction (Wheat)
+# ============================================================================
+
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nitrogen": 80,
+    "phosphorus": 50,
+    "potassium": 40
+  }'
+
+
+# ============================================================================
+# 5. Make a Prediction (Potato)
+# ============================================================================
+
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nitrogen": 50,
+    "phosphorus": 55,
+    "potassium": 50
+  }'
+
+
+# ============================================================================
+# 6. Get Prediction History
+# ============================================================================
+
+# Get last 10 predictions
+curl http://localhost:8000/history?limit=10
+
+# Expected Response:
+# {
+#   "success": true,
+#   "count": 10,
+#   "data": [
+#     {
+#       "_id": "65abc123...",
+#       "nitrogen": 90,
+#       "phosphorus": 42,
+#       "potassium": 43,
+#       "recommended_crop": "rice",
+#       "confidence": 0.92,
+#       "timestamp": "2026-03-10T12:00:00"
+#     },
+#     ...
+#   ]
+# }
+
+
+# ============================================================================
+# 7. Clear History (DELETE)
+# ============================================================================
+
+curl -X DELETE http://localhost:8000/history
+
+# Expected Response:
+# {
+#   "success": true,
+#   "message": "Deleted 10 records",
+#   "deleted_count": 10
+# }
+
+
+# ============================================================================
+# 8. Test with Invalid Data (Should Return Error)
+# ============================================================================
+
+# Negative values
+curl -X POST http://localhost:8000/predict \
+  -H "Content-Type: application/json" \
+  -d '{
+    "nitrogen": -10,
+    "phosphorus": 42,
+    "potassium": 43
+  }'
+
+# Expected Error Response:
+# {
+#   "detail": [
+#     {
+#       "loc": ["body", "nitrogen"],
+#       "msg": "Value must be positive",
+#       "type": "value_error"
+#     }
+#   ]
+# }
+
+
+# ============================================================================
+# 9. API Documentation
+# ============================================================================
+
+# Interactive API documentation (Swagger UI)
+# Open in browser: http://localhost:8000/docs
+
+# Alternative documentation (ReDoc)
+# Open in browser: http://localhost:8000/redoc
+
+
+# ============================================================================
+# Python Example
+# ============================================================================
+
+"""
+import requests
+
+# Make prediction
+response = requests.post(
+    'http://localhost:8000/predict',
+    json={
+        'nitrogen': 90,
+        'phosphorus': 42,
+        'potassium': 43
+    }
+)
+
+result = response.json()
+print(f"Recommended Crop: {result['prediction']['recommended_crop']}")
+print(f"Confidence: {result['prediction']['confidence_score'] * 100:.2f}%")
+"""
+
+
+# ============================================================================
+# JavaScript Example
+# ============================================================================
+
+"""
+// Using fetch API
+fetch('http://localhost:8000/predict', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    nitrogen: 90,
+    phosphorus: 42,
+    potassium: 43
+  })
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Recommended Crop:', data.prediction.recommended_crop);
+  console.log('Confidence:', data.prediction.confidence_score);
+})
+.catch(error => console.error('Error:', error));
+"""
+
+
+# ============================================================================
+# PowerShell Example (Windows)
+# ============================================================================
+
+<#
+# Make prediction using PowerShell
+$body = @{
+    nitrogen = 90
+    phosphorus = 42
+    potassium = 43
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod -Uri "http://localhost:8000/predict" `
+    -Method Post `
+    -Body $body `
+    -ContentType "application/json"
+
+Write-Host "Recommended Crop: $($response.prediction.recommended_crop)"
+Write-Host "Confidence: $($response.prediction.confidence_score * 100)%"
+#>
