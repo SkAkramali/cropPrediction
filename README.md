@@ -27,18 +27,24 @@ A complete full-stack machine learning application that recommends the best crop
 ## ✨ Features
 
 ### Machine Learning
-- **Multiple Algorithm Comparison**: Automatically trains and compares 4 ML models
-  - Random Forest
-  - Decision Tree
-  - K-Nearest Neighbors (KNN)
-  - Logistic Regression
-- **Best Model Selection**: Automatically selects the highest performing model
+- **8 Algorithm Comparison**: Trains and compares multiple ML models
+  - Random Forest, Decision Tree, K-Nearest Neighbors, Logistic Regression
+  - XGBoost, Gradient Boosting, SVM, MLP Neural Network
+- **Hyperparameter Tuning**: GridSearchCV on top-performing models
+- **Best Model Auto-Selection**: Automatically selects the highest performing model
+- **Cross-Validation**: 5-fold CV for robust evaluation
+- **Confusion Matrix & Feature Importance**: Detailed model analysis
 - **Confidence Scoring**: Provides confidence scores for predictions
-- **Model Persistence**: Saves trained models for production use
+- **Model Persistence**: Saves trained models via joblib
+- **Model Retraining**: Periodic retraining using stored prediction data
 
 ### Backend API
 - **FastAPI Framework**: High-performance async API
 - **RESTful Endpoints**: Clean and well-documented API
+  - `POST /predict` — Single crop prediction
+  - `POST /predict-batch` — CSV batch prediction
+  - `GET /history` — Prediction history from MongoDB
+  - `POST /retrain` — Trigger model retraining
 - **Input Validation**: Pydantic models for request/response validation
 - **Error Handling**: Comprehensive error messages
 - **CORS Support**: Configured for frontend integration
@@ -51,12 +57,14 @@ A complete full-stack machine learning application that recommends the best crop
 - **Async Operations**: Non-blocking database operations
 
 ### Frontend
-- **Modern React UI**: Clean and intuitive interface
+- **Tab-Based Dashboard**: Modern React UI with three tabs
+  - **Single Prediction**: NPK form with confidence visualization
+  - **Bulk CSV Upload**: Upload CSV, view results table, download predictions
+  - **Prediction History**: Browse all past predictions from MongoDB
 - **Real-time Validation**: Client-side input validation
 - **Responsive Design**: Works on desktop, tablet, and mobile
-- **Visual Feedback**: Loading states, error messages, success indicators
-- **Prediction History**: View recent predictions
-- **Confidence Visualization**: Progress bars showing prediction confidence
+- **Modern Styling**: Clean card-based layout with Inter font
+- **Confidence Visualization**: Progress bars and color-coded badges
 
 ---
 
@@ -121,34 +129,38 @@ crop-recomendation-engine/
 │
 ├── backend/
 │   ├── model/
-│   │   └── train_model.py          # ML training script
+│   │   ├── train_model.py          # ML training script (8 models)
+│   │   ├── retrain_model.py        # Retraining from MongoDB data
+│   │   └── Crop_recommendation.csv # Dataset
 │   ├── saved_model/
 │   │   ├── crop_model.pkl          # Trained model (generated)
 │   │   ├── scaler.pkl              # Feature scaler (generated)
-│   │   └── model_metadata.json    # Model info (generated)
+│   │   ├── label_encoder.pkl       # Label encoder (generated)
+│   │   └── model_metadata.json     # Model info (generated)
 │   ├── api/
 │   │   └── main.py                 # FastAPI application
 │   ├── database/
 │   │   └── mongodb_config.py       # MongoDB configuration
-│   ├── requirements.txt            # Python dependencies
-│   └── .env.example               # Environment variables template
+│   └── requirements.txt            # Python dependencies
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── components/
-│   │   │   ├── CropPredictor.jsx  # Main prediction component
-│   │   │   └── CropPredictor.css  # Component styles
-│   │   ├── App.jsx                # Root component
-│   │   ├── App.css                # App styles
-│   │   ├── index.css              # Global styles
-│   │   └── main.jsx               # Entry point
-│   ├── index.html                 # HTML template
-│   ├── package.json               # Node dependencies
-│   ├── vite.config.js             # Vite configuration
-│   └── .env                       # Frontend environment variables
+│   │   │   ├── PredictTab.jsx      # Single prediction form
+│   │   │   ├── UploadCSVTab.jsx    # Bulk CSV upload & results
+│   │   │   ├── HistoryTab.jsx      # Prediction history table
+│   │   │   └── Navbar.jsx          # Navigation bar with tabs
+│   │   ├── App.jsx                 # Root component (tab router)
+│   │   ├── App.css                 # Dashboard styles
+│   │   ├── index.css               # Global styles
+│   │   └── main.jsx                # Entry point
+│   ├── index.html                  # HTML template
+│   ├── package.json                # Node dependencies
+│   └── vite.config.js              # Vite configuration
 │
-├── API_EXAMPLES.txt               # API testing examples
-└── README.md                      # This file
+├── API_EXAMPLES.txt                # API testing examples
+├── QUICKSTART.md                   # Quick start guide
+└── README.md                       # This file
 ```
 
 ---

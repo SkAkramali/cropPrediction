@@ -89,7 +89,33 @@ curl -X POST http://localhost:8000/predict \
 
 
 # ============================================================================
-# 6. Get Prediction History
+# 6. Batch Prediction (CSV Upload)
+# ============================================================================
+
+# Upload a CSV file for bulk prediction
+curl -X POST http://localhost:8000/predict-batch \
+  -F "file=@soil_samples.csv"
+
+# Example CSV file content (soil_samples.csv):
+# nitrogen,phosphorus,potassium
+# 90,40,43
+# 70,35,50
+# 50,55,50
+
+# Expected Response:
+# {
+#   "success": true,
+#   "predictions": [
+#     {"nitrogen": 90, "phosphorus": 40, "potassium": 43, "crop": "rice", "confidence": 0.92},
+#     {"nitrogen": 70, "phosphorus": 35, "potassium": 50, "crop": "maize", "confidence": 0.88},
+#     {"nitrogen": 50, "phosphorus": 55, "potassium": 50, "crop": "potato", "confidence": 0.85}
+#   ],
+#   "count": 3
+# }
+
+
+# ============================================================================
+# 7. Get Prediction History
 # ============================================================================
 
 # Get last 10 predictions
@@ -129,7 +155,22 @@ curl -X DELETE http://localhost:8000/history
 
 
 # ============================================================================
-# 8. Test with Invalid Data (Should Return Error)
+# 9. Trigger Model Retraining
+# ============================================================================
+
+curl -X POST http://localhost:8000/retrain
+
+# Expected Response:
+# {
+#   "success": true,
+#   "message": "Model retrained successfully",
+#   "stdout": "...training output...",
+#   "stderr": ""
+# }
+
+
+# ============================================================================
+# 10. Test with Invalid Data (Should Return Error)
 # ============================================================================
 
 # Negative values
